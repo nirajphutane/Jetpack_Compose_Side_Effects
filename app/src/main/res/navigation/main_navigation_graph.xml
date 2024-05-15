@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation_graph"
+    app:startDestination="@id/practical_fragment">
+
+    <fragment
+        android:id="@+id/practical_fragment"
+        android:name="com.np.composesideeffects.PracticalFragment"
+        android:label="Practice Fragment" />
+
+    <fragment
+        android:id="@+id/practical_fragment_N"
+        android:name="com.np.composesideeffects.practicals.PracticeFragmentN"
+        android:label="Practical Fragment N" />
+
+</navigation>
