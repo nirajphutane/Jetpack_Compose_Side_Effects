@@ -57,6 +57,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Side Effect")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_2)
+                        }
+                    ) {
+                        Text("Launched Effect")
+                    }
                 }
             }
         }
