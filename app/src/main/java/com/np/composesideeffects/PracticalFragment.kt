@@ -65,6 +65,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Launched Effect")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_3)
+                        }
+                    ) {
+                        Text("Disposable Effect")
+                    }
                 }
             }
         }
