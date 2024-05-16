@@ -81,6 +81,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Produce State")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_5)
+                        }
+                    ) {
+                        Text("Derived State Of")
+                    }
                 }
             }
         }
