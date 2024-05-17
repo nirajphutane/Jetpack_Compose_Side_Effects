@@ -89,6 +89,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Derived State Of")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_6)
+                        }
+                    ) {
+                        Text("Snapshot Flow")
+                    }
                 }
             }
         }

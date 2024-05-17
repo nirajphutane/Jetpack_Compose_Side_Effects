@@ -36,6 +36,11 @@
         android:label="Practical Fragment 5" />
 
     <fragment
+        android:id="@+id/practical_fragment_6"
+        android:name="com.np.composesideeffects.practicals.PracticeFragment6"
+        android:label="Practical Fragment 6" />
+
+    <fragment
         android:id="@+id/practical_fragment_N"
         android:name="com.np.composesideeffects.practicals.PracticeFragmentN"
         android:label="Practical Fragment N" />
