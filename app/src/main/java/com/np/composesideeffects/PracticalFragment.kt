@@ -97,6 +97,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Snapshot Flow")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_7)
+                        }
+                    ) {
+                        Text("Remember Coroutine Scope")
+                    }
                 }
             }
         }
