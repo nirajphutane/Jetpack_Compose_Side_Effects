@@ -30,7 +30,7 @@ import com.np.composesideeffects.core.appLog
 import com.np.composesideeffects.ui.theme.ComposeSideEffectsTheme
 import kotlinx.coroutines.delay
 
-class PracticeFragment8 : BaseFragment() {
+class RememberUpdatedState : BaseFragment() {
 
     @Composable
     override fun View() = ComposeView()
@@ -39,7 +39,7 @@ class PracticeFragment8 : BaseFragment() {
     @Composable
     override fun Preview() = ComposeView()
 
-    private val screen = "Practical 8: RememberUpdatedState"
+    private val screen = "RememberUpdatedState"
     private val localScreen = staticCompositionLocalOf { screen }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

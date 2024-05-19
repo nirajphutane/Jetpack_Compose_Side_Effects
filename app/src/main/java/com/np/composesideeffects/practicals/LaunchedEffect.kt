@@ -24,7 +24,7 @@ import com.np.composesideeffects.core.appLog
 import com.np.composesideeffects.ui.theme.ComposeSideEffectsTheme
 import kotlinx.coroutines.delay
 
-class PracticeFragment2: BaseFragment() {
+class LaunchedEffect: BaseFragment() {
 
     @Composable
     override fun View() = ComposeView()
@@ -32,7 +32,7 @@ class PracticeFragment2: BaseFragment() {
     @Preview @Composable
     override fun Preview() = ComposeView()
 
-    private val screen = "Practical 2: LaunchedEffect"
+    private val screen = "LaunchedEffect"
     private val localScreen = staticCompositionLocalOf  { screen }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

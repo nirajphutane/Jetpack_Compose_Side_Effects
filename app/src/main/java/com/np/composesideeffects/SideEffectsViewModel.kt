@@ -4,7 +4,7 @@ import com.np.composesideeffects.base_pkgs.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class PracticeFragmentViewModel: BaseViewModel() {
+class SideEffectsViewModel: BaseViewModel() {
 
     private val _uiState = MutableStateFlow<UIStates<Nothing?, Nothing?>?>(null)
     val uiState = _uiState.asStateFlow()

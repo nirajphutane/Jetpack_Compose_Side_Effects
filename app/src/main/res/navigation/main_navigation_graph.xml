@@ -7,52 +7,46 @@
 
     <fragment
         android:id="@+id/practical_fragment"
-        android:name="com.np.composesideeffects.PracticalFragment"
-        android:label="Practice Fragment" />
+        android:name="com.np.composesideeffects.SideEffects"
+        android:label="Side Effects" />
 
     <fragment
-        android:id="@+id/practical_fragment_1"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment1"
-        android:label="Practical Fragment 1" />
+        android:id="@+id/side_effect"
+        android:name="com.np.composesideeffects.practicals.SideEffect"
+        android:label="Side Effect" />
 
     <fragment
-        android:id="@+id/practical_fragment_2"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment2"
-        android:label="Practical Fragment 2" />
+        android:id="@+id/launched_effect"
+        android:name="com.np.composesideeffects.practicals.LaunchedEffect"
+        android:label="Launched Effect" />
 
     <fragment
-        android:id="@+id/practical_fragment_3"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment3"
-        android:label="Practical Fragment 3" />
+        android:id="@+id/disposable_effect"
+        android:name="com.np.composesideeffects.practicals.DisposableEffect"
+        android:label="Disposable Effect" />
 
     <fragment
-        android:id="@+id/practical_fragment_4"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment4"
-        android:label="Practical Fragment 4" />
+        android:id="@+id/produce_state"
+        android:name="com.np.composesideeffects.practicals.ProduceState"
+        android:label="Produce State" />
 
     <fragment
-        android:id="@+id/practical_fragment_5"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment5"
-        android:label="Practical Fragment 5" />
+        android:id="@+id/derived_state_of"
+        android:name="com.np.composesideeffects.practicals.DerivedStateOf"
+        android:label="Derived State Of" />
 
     <fragment
-        android:id="@+id/practical_fragment_6"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment6"
-        android:label="Practical Fragment 6" />
+        android:id="@+id/snapshot_flow"
+        android:name="com.np.composesideeffects.practicals.SnapshotFlow"
+        android:label="Snapshot Flow" />
 
     <fragment
-        android:id="@+id/practical_fragment_7"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment7"
-        android:label="Practical Fragment 7" />
+        android:id="@+id/remember_coroutine_scope"
+        android:name="com.np.composesideeffects.practicals.RememberCoroutineScope"
+        android:label="Remember Coroutine Scope" />
 
     <fragment
-        android:id="@+id/practical_fragment_8"
-        android:name="com.np.composesideeffects.practicals.PracticeFragment8"
-        android:label="Practical Fragment 8" />
-
-    <fragment
-        android:id="@+id/practical_fragment_N"
-        android:name="com.np.composesideeffects.practicals.PracticeFragmentN"
-        android:label="Practical Fragment N" />
-
+        android:id="@+id/remember_updated_state"
+        android:name="com.np.composesideeffects.practicals.RememberUpdatedState"
+        android:label="Remember Updated State" />
 </navigation>

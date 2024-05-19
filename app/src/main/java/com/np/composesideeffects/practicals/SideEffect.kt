@@ -1,7 +1,9 @@
 package com.np.composesideeffects.practicals
 
 import android.os.Bundle
+import android.text.Html
 import android.view.View
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +21,15 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.text.HtmlCompat
+import androidx.lifecycle.lifecycleScope
 import com.np.composesideeffects.base_pkgs.BaseFragment
 import com.np.composesideeffects.core.appLog
 import com.np.composesideeffects.ui.theme.ComposeSideEffectsTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class PracticeFragment1: BaseFragment() {
+class SideEffect: BaseFragment() {
 
     @Composable
     override fun View() = ComposeView()
@@ -31,7 +37,7 @@ class PracticeFragment1: BaseFragment() {
     @Preview @Composable
     override fun Preview() = ComposeView()
 
-    private val screen = "Practical 1: SideEffect"
+    private val screen = "SideEffect"
     private val localScreen = staticCompositionLocalOf  { screen }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,6 +125,7 @@ class PracticeFragment1: BaseFragment() {
 
         val isInitialized = remember { mutableStateOf(false) }
         appLog("1. Is Initialized: ${isInitialized.value}")
+        showToast(isInitialized.value.toString(), color = "FF0000")
 
         SideEffect {
             if (!isInitialized.value) {
@@ -129,11 +136,16 @@ class PracticeFragment1: BaseFragment() {
                 isInitialized.value = true
             }
             appLog("2. Is Initialized: ${isInitialized.value}")
+            showToast("In SideEffect: ${isInitialized.value}", duration = 1000, color = "00FF00")
         }
 
         Text("Is Initialized: ${isInitialized.value}")
     }
 
+    private fun showToast(text: String, duration: Long = 0, color: String = "FF0000") = lifecycleScope.launch {
+        delay(duration)
+        Toast.makeText(context, Html.fromHtml("<font color='#$color'>$text</font>", HtmlCompat.FROM_HTML_MODE_COMPACT), Toast.LENGTH_SHORT).show()
+    }
 }
 
 /*

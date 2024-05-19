@@ -27,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PracticeFragment3 : BaseFragment() {
+class DisposableEffect : BaseFragment() {
 
     @Composable
     override fun View() = ComposeView()
@@ -36,7 +36,7 @@ class PracticeFragment3 : BaseFragment() {
     @Composable
     override fun Preview() = ComposeView()
 
-    private val screen = "Practical 3: DisposableEffect"
+    private val screen = "DisposableEffect"
     private val localScreen = staticCompositionLocalOf { screen }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

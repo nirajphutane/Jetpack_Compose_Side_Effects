@@ -33,7 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class PracticeFragment6 : BaseFragment() {
+class SnapshotFlow : BaseFragment() {
 
     @Composable
     override fun View() = ComposeView()
@@ -42,7 +42,7 @@ class PracticeFragment6 : BaseFragment() {
     @Composable
     override fun Preview() = ComposeView()
 
-    private val screen = "Practical 6: Snapshot Flow"
+    private val screen = "Snapshot Flow"
     private val localScreen = staticCompositionLocalOf { screen }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
