@@ -105,6 +105,14 @@ class PracticalFragment: BaseFragment() {
                     ) {
                         Text("Remember Coroutine Scope")
                     }
+
+                    Button(
+                        onClick = {
+                            navigateTo(R.id.practical_fragment_8)
+                        }
+                    ) {
+                        Text("Remember Updated State")
+                    }
                 }
             }
         }
