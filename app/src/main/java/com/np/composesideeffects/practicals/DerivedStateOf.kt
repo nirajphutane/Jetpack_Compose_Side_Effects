@@ -2,6 +2,7 @@ package com.np.composesideeffects.practicals
 
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -94,16 +95,15 @@ class DerivedStateOf : BaseFragment() {
         appLog("State: $state")
 
         var count by remember { mutableIntStateOf(1) }
-        val isCountInMultipleOf5 by remember {
+        val message by remember {
             derivedStateOf {
                 val message = "Count In DerivedState: $count"
                 appLog(message)
                 showToast(message)
-                count % 5 == 0
+                "The count is${if (count % 5 != 0) " 'not'" else ""} a multiple of 5"
             }
         }
 
-        val message = "Is count in multiple of 5? ${if (isCountInMultipleOf5) "Yes" else "No"}"
         appLog(message)
         showToast(message, 1000, color = "00FF00")
 
