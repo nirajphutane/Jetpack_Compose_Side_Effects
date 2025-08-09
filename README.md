@@ -3,7 +3,7 @@
 ## Jetpack Compose Side Effects 🦾
 ---
 
-### LaunchedEffect
+### 📌 LaunchedEffect
 
 🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition.
 It automatically starts when conditions are met and cancels when the Composable leaves the Composition.
@@ -16,9 +16,9 @@ When the Composable leaves the Composition, LaunchedEffect cancels its internal 
 If you launch an external coroutine from within it, cancellation of that coroutine depends on how you manage the external scope.
 
 🟣 LaunchedEffect helps prevent unnecessary re-initiation and re-execution of asynchronous code due to recomposition.
-During recomposition, a new instance of the Composable is created while the old one is removed and eligible for garbage collection.
+During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and eligible for garbage collection.
 Without LaunchedEffect, already running asynchronous code could be canceled and restarted unnecessarily, or multiple parallel instances of the same task could be launched.
-With LaunchedEffect, coroutine restarts are controlled through its key parameter.
+With LaunchedEffect, if the key does not change, the same LaunchedEffect instance is retained and prevents the new coroutine launch. The restart behavior of LaunchedEffect is controlled through its optional key parameter.
 
 🟣 LaunchedEffect accepts an optional key parameter:
 
@@ -58,6 +58,63 @@ With LaunchedEffect, coroutine restarts are controlled through its key parameter
                                                  │
                                                  ▼
                                     (Fresh start like initial)
+
+```
+
+---
+
+### 📌 DisposableEffect
+
+🟣 DisposableEffect is a Compose lifecycle-aware side-effect API used for synchronous, non-suspending setup and cleanup logic tied to the composition.
+It runs setup code when the Composable enters the Composition and runs cleanup code when the Composable leaves.
+
+🟣 It is used to run synchronous code with side effects with an onDispose callback when the Composable leaves the Composition.
+It is not recommended to launch any coroutine in this block.
+
+🟣 When a Composable function is initially added to the Composition, DisposableEffect starts.
+When the Composable leaves the Composition, DisposableEffect calls onDispose {} lambda to run mostly the cleanup logic.
+
+🟣 DisposableEffect helps prevent unnecessary re-initiation and re-execution of synchronous code due to recomposition.
+During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and eligible for garbage collection.
+Without DisposableEffect, already running synchronous code could be canceled and restarted unnecessarily.
+During recomposition, if the key does not change, the same DisposableEffect instance is retained and prevents the  setup/cleanup repetition. The restart behavior of DisposableEffect is controlled through its optional key parameter.
+
+🟣 DisposableEffect accepts an optional key parameter:
+
+  - Without a key, or with the same constant key → runs once when the Composable is added to the Composition and will not restart on recomposition.
+
+  - With a different key value → immediately cancels the current run, and restarts from scratch with the new key. This restart is triggered by key change, not by recomposition alone.
+
+🟣 If the Composable leaves the Composition and re-enters, DisposableEffect will start fresh even if the key is the same, constant, or absent. In this case, the key does not affect restart behavior.
+
+```
+                ┌─────────────────────────┐
+                │ Composable enters       │
+                │ the Composition         │
+                └───────────┬─────────────┘
+                            │
+                            ▼
+                ┌─────────────────────────┐
+                │ Run setup code (sync)   │
+                └───────────┬─────────────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          ▼                 ▼                 ▼
+   (Recomposition)   (Key changes)    (Composable leaves Composition)
+  ┌────────────────┐ ┌─────────────┐ ┌────────────────────────────────┐
+  │ Key same/none  │ │ New key     │ │ Run cleanup code               │
+  │ → No restart   │ │ → Run       │ │ Release resources, unregister  │
+  │ Setup stays    │ │ cleanup,    │ │ listeners, close handles, etc. │
+  │ active         │ │ then setup  │ └───────────┬────────────────────┘
+  └────────────────┘ └─────────────┘             │
+                                                  ▼
+                                     ┌────────────────────────┐
+                                     │ Composable re-enters   │
+                                     │ the Composition        │
+                                     └───────────┬────────────┘
+                                                 │
+                                                 ▼
+                                    (Fresh setup like initial)
 
 ```
 
