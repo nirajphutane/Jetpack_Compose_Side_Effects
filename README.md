@@ -149,7 +149,7 @@ During recomposition, if the key does not change, the same DisposableEffect inst
 
 🟣 LaunchedEffect is a Composable function that runs immediately during composition, but normal callbacks from Compose UI components are non-Composable. Calling LaunchedEffect from such callbacks will cause a compile-time error.
 
-🟣 On the other hand, rememberCoroutineScope() is declared inside a Composable during composition and returns a CoroutineScope instance that can be used later. This allows you to safely launch coroutines in non-Composable callbacks while still being lifecycle-aware.
+🟣 On the other hand, rememberCoroutineScope() is declared inside a Composable during composition and returns a CoroutineScope instance that can be used later. This allows you to safely launch coroutines in non-Composable callbacks while still being lifecycle-aware. So, rememberCoroutineScope is typically used for handling events like gesture listeners.
 
 🟣 When to use:
   - If you need to start a coroutine automatically during composition, use LaunchedEffect.
@@ -219,6 +219,41 @@ fun MyComposable() {
 🟣 ProduceState accepts an optional key parameter:
   - Without a key, or with the same constant key → runs once when the Composable is added to the Composition and will not restart on recomposition.
   - With a different key value → immediately cancels the current coroutine and restarts from scratch with the new key. The state is reset to the initial value, and the coroutine starts fresh, producing values from the beginning. This restart is triggered by key change, not by recomposition alone.
+
+---
+
+### 📌 snapshotFlow
+
+🟣 snapshotFlow is a Jetpack Compose API that converts a snapshot-aware value (such as one created by remember { mutableStateOf(...) }) into a cold Kotlin Flow.
+
+🟣 It is distinct in nature because it emits only when the observed Compose state value actually changes.
+
+🟣 It works only inside a CoroutineScope.
+
+🟣 It is primarily used to observe state changes inside Compose — particularly gesture-driven, scroll-based, or user input events in the UI layer.
+
+🟣 snapshotFlow is safe from triggering due to normal recompositions when used inside proper side-effect blocks like LaunchedEffect or produceState. However, it will restart and be re-collected if the parent side-effect is restarted due to key changes.
+
+🟣 When combined with produceState, like this:
+```
+val index by produceState(initialValue = 0) {
+    snapshotFlow { scrollState.value }
+        .collect { value = it }
+}
+```
+…it behaves like a reactive State backed by a Flow.
+
+🟣 snapshotFlow is the only Compose-native reactive Flow utility for observing snapshot state changes such as:
+  - Scroll position
+  - Input field changes
+  - Gesture progress
+  - Animation frame changes
+
+🟣 It is not recommended for business logic because:
+  - snapshotFlow is re-created every time the surrounding side-effect restarts (not strictly on every recomposition unless the side-effect restarts)
+  - It is tied to the UI lifecycle only
+  - It observes Compose snapshot reads (state values), not Flows or repositories
+  - It is not connected to repositories, databases, or app-wide state flows
 
 ---
 ### Thanks 🙏🏻
