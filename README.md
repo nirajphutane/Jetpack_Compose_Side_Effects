@@ -22,9 +22,7 @@ Without LaunchedEffect, already running asynchronous code could be canceled and 
 With LaunchedEffect, if the key does not change, the same LaunchedEffect instance is retained and prevents the new coroutine launch. The restart behavior of LaunchedEffect is controlled through its optional key parameter.
 
 🟣 LaunchedEffect accepts an optional key parameter:
-
   - Without a key, or with the same constant key → runs once when the Composable is added to the Composition and will not restart on recomposition.
-
   - With a different key value → immediately cancels the current coroutine scope, passes the cancellation to the coroutine inside it, and restarts from scratch with the new key. This restart is triggered by key change, not by recomposition alone.
 
 🟣 If the Composable leaves the Composition and re-enters, LaunchedEffect will start fresh even if the key is the same, constant, or absent. In this case, the key does not affect restart behavior.
@@ -81,9 +79,7 @@ Without DisposableEffect, already running synchronous code could be canceled and
 During recomposition, if the key does not change, the same DisposableEffect instance is retained and prevents the  setup/cleanup repetition. The restart behavior of DisposableEffect is controlled through its optional key parameter.
 
 🟣 DisposableEffect accepts an optional key parameter:
-
   - Without a key, or with the same constant key → runs once when the Composable is added to the Composition and will not restart on recomposition.
-
   - With a different key value → immediately cancels the current run, and restarts from scratch with the new key. This restart is triggered by key change, not by recomposition alone.
 
 🟣 If the Composable leaves the Composition and re-enters, DisposableEffect will start fresh even if the key is the same, constant, or absent. In this case, the key does not affect restart behavior.
@@ -207,6 +203,22 @@ fun MyComposable() {
 
 
 ```
+
+---
+
+### 📌 ProduceState
+
+🟣 ProduceState is a lifecycle-aware side-effect function in Compose that launches a coroutine to update the state and returns a read-only State<T> object, whose value is updated asynchronously and can be read synchronously within Composables. It uses Dispatchers.Main.immediate by default, which runs the coroutine on the UI thread and starts execution immediately, ensuring it interacts with the UI without waiting.
+
+🟣 When a Composable function is initially added to the Composition, produceState exhibits eager behavior — it starts producing values immediately, even before the state is read. As a result, there’s a potential for missing initial or intermediate values if there’s a delay in reading the state, because Compose retains only the latest value. When the Composable leaves the Composition, the coroutine is canceled and stops producing values. This helps prevent unnecessary operations when the UI element is no longer visible.
+
+🟣 ProduceState acts as a bridge for asynchronous work directly in Composables. It allows suspend functions, flows, or other asynchronous data sources to be used in Composables without the need for a ViewModel. This makes it easier to handle asynchronous operations directly in the UI layer.
+
+🟣 ProduceState returns a read-only state object, so the value can be read synchronously or asynchronously, but you cannot update the value directly from outside the coroutine. The value can only be updated from within the coroutine using this.value inside the produceState block.
+
+🟣 ProduceState accepts an optional key parameter:
+  - Without a key, or with the same constant key → runs once when the Composable is added to the Composition and will not restart on recomposition.
+  - With a different key value → immediately cancels the current coroutine and restarts from scratch with the new key. The state is reset to the initial value, and the coroutine starts fresh, producing values from the beginning. This restart is triggered by key change, not by recomposition alone.
 
 ---
 ### Thanks 🙏🏻
