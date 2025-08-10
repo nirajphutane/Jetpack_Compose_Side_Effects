@@ -5,7 +5,8 @@
 
 ### 📌 LaunchedEffect
 
-🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition on the UI thread.
+🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition.
+It uses Dispatchers.Main.immediate by default, which runs coroutines on the UI thread and executes immediately
 It implicitly starts when the Composable enters the Composition and cancels when the Composable leaves the Composition. No need to handle it explicitly.
 
 🟣 It is used to run asynchronous code — such as suspend functions and coroutines — safely in Compose without leaking coroutines.
@@ -141,6 +142,71 @@ During recomposition, if the key does not change, the same DisposableEffect inst
   - rememberUpdatedState wraps a value or lambda and ensures the latest version is always available inside side-effect blocks.
   - Even if the side-effect block was created during the initial composition, it will read the updated reference from rememberUpdatedState on every use.
   - This guarantees that any asynchronous block always works with the most recent value or lambda passed from the parent.
+
+---
+
+### 📌 rememberCoroutineScope
+
+🟣 rememberCoroutineScope is a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the Composition and confined to the UI thread’s dispatcher by default.
+
+🟣 But unlike LaunchedEffect, it will not start implicitly when the Composable enters the Composition. It is created but not started until launch is explicitly called. It will, however, automatically cancel when the Composable leaves the Composition.
+
+🟣 LaunchedEffect is a Composable function that runs immediately during composition, but normal callbacks from Compose UI components are non-Composable. Calling LaunchedEffect from such callbacks will cause a compile-time error.
+
+🟣 On the other hand, rememberCoroutineScope() is declared inside a Composable during composition and returns a CoroutineScope instance that can be used later. This allows you to safely launch coroutines in non-Composable callbacks while still being lifecycle-aware.
+
+🟣 When to use:
+  - If you need to start a coroutine automatically during composition, use LaunchedEffect.
+  - If you need to launch a coroutine later in response to a non-Composable event or callback, use rememberCoroutineScope, because it’s the only option to start a Compose lifecycle-aware coroutine outside the composition phase.
+
+```
+
+@Composable
+fun MyComposable() {
+    val scope = rememberCoroutineScope()
+
+    Button(onClick = {
+        scope.launch {
+            println("🔥 Coroutine started")
+            delay(3000)
+            println("✅ Coroutine finished")
+        }
+    }) {
+        Text("Start Work")
+    }
+}
+
+```
+
+🟣 Here, when the button's onClick is invoked, the instance from rememberCoroutineScope() launches a coroutine that is lifecycle-aware with respect to the Composable.
+
+🟣 This coroutine will complete naturally—either by finishing its execution, by throwing a runtime exception, or by being automatically cancelled when the Composable leaves the Composition.
+
+🟣 Also, if the callback is invoked multiple times, then each invocation launches a new coroutine. The existing coroutines will continue to run independently, and multiple coroutines may run concurrently or in parallel (depending on the dispatcher).
+
+🟣 To prevent this behavior (i.e., multiple concurrent coroutines), scope.launch {} returns an ordinary Job instance, which can be stored. You can cancel the currently running job before launching a new one, as shown below:
+
+```
+
+@Composable
+fun MyComposable() {
+    val scope = rememberCoroutineScope()
+    var job: Job? = null
+
+    Button(onClick = {
+        job?.cancel() // Cancel the previous coroutine if it's still running
+        job = scope.launch {
+            println("🔥 Coroutine started")
+            delay(3000)
+            println("✅ Coroutine finished")
+        }
+    }) {
+        Text("Start Work")
+    }
+}
+
+
+```
 
 ---
 ### Thanks 🙏🏻
