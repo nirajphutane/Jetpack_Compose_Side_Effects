@@ -120,7 +120,7 @@ During recomposition, if the key does not change, the same DisposableEffect inst
 
 ---
 
-📌 rememberUpdatedState
+### 📌 rememberUpdatedState
 
 🟣 In Jetpack Compose, we often build a parent–child Composable hierarchy.
 
