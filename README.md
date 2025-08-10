@@ -6,7 +6,7 @@
 ### 📌 LaunchedEffect
 
 🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition.
-It uses Dispatchers.Main.immediate by default, which runs coroutines on the UI thread and executes immediately
+It uses Dispatchers.Main.immediate by default, which runs coroutines on the UI thread and executes immediately.
 It implicitly starts when the Composable enters the Composition and cancels when the Composable leaves the Composition. No need to handle it explicitly.
 
 🟣 It is used to run asynchronous code — such as suspend functions and coroutines — safely in Compose without leaking coroutines.
