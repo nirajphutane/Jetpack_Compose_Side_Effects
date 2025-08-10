@@ -16,7 +16,7 @@ When the Composable leaves the Composition, LaunchedEffect cancels its internal 
 If you launch an external coroutine from within it, cancellation of that coroutine depends on how you manage the external scope.
 
 🟣 LaunchedEffect helps prevent unnecessary re-initiation and re-execution of asynchronous code due to recomposition.
-During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and eligible for garbage collection.
+During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and becomes eligible for garbage collection.
 Without LaunchedEffect, already running asynchronous code could be canceled and restarted unnecessarily, or multiple parallel instances of the same task could be launched.
 With LaunchedEffect, if the key does not change, the same LaunchedEffect instance is retained and prevents the new coroutine launch. The restart behavior of LaunchedEffect is controlled through its optional key parameter.
 
@@ -75,7 +75,7 @@ It is not recommended to launch any coroutine in this block.
 When the Composable leaves the Composition, DisposableEffect calls onDispose {} lambda to run mostly the cleanup logic.
 
 🟣 DisposableEffect helps prevent unnecessary re-initiation and re-execution of synchronous code due to recomposition.
-During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and eligible for garbage collection.
+During recomposition, if the state changes, a new instance of the Composable is created while the old one is removed and becomes eligible for garbage collection.
 Without DisposableEffect, already running synchronous code could be canceled and restarted unnecessarily.
 During recomposition, if the key does not change, the same DisposableEffect instance is retained and prevents the  setup/cleanup repetition. The restart behavior of DisposableEffect is controlled through its optional key parameter.
 
@@ -117,6 +117,30 @@ During recomposition, if the key does not change, the same DisposableEffect inst
                                     (Fresh setup like initial)
 
 ```
+
+---
+
+📌 rememberUpdatedState
+
+🟣 In Jetpack Compose, we often build a parent–child Composable hierarchy.
+
+🟣 If a Child Composable requires a lambda function callback or a value parameter, the Parent Composable passes it down as an argument.
+
+🟣 Generally, when these values or callbacks are used synchronously inside the Child Composable, there is no visible side effect.
+
+🟣 However, if these arguments are used asynchronously inside a side-effect block such as LaunchedEffect or rememberCoroutineScope, something different happens:
+  - On the initial composition, the side-effect block captures the current instance of the lambda or value parameter.
+  - If the Parent Composable recomposes later, then the old one is removed and becomes eligible for garbage collection and it will create a new instance of the lambda or a new value for the parameter and pass it to the Child Composable.
+  - But the asynchronous side-effect block inside the Child Composable still holds the old captured instance from the first composition.
+  - As a result:
+    - If the lambda’s implementation changes in the parent, the side-effect block will still call the old implementation.
+    - If the variable’s value changes in the parent, the side-effect block will still see the old value.
+  - This leads to unexpected behavior because the side-effect block is not automatically updated with the new references or values.
+
+🟣 To prevent this problem, we use rememberUpdatedState.
+  - rememberUpdatedState wraps a value or lambda and ensures the latest version is always available inside side-effect blocks.
+  - Even if the side-effect block was created during the initial composition, it will read the updated reference from rememberUpdatedState on every use.
+  - This guarantees that any asynchronous block always works with the most recent value or lambda passed from the parent.
 
 ---
 ### Thanks 🙏🏻
