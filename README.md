@@ -5,8 +5,8 @@
 
 ### 📌 LaunchedEffect
 
-🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition.
-It automatically starts when conditions are met and cancels when the Composable leaves the Composition.
+🟣 LaunchedEffect provides a Compose lifecycle-aware CoroutineScope to run suspend functions or coroutines tied to the composition on the UI thread.
+It implicitly starts when conditions are met and cancels when the Composable leaves the Composition. No need to handle it explicitly.
 
 🟣 It is used to run asynchronous code — such as suspend functions and coroutines — safely in Compose without leaking coroutines.
 It is not recommended for running purely synchronous code.
@@ -66,7 +66,7 @@ With LaunchedEffect, if the key does not change, the same LaunchedEffect instanc
 ### 📌 DisposableEffect
 
 🟣 DisposableEffect is a Compose lifecycle-aware side-effect API used for synchronous, non-suspending setup and cleanup logic tied to the composition.
-It runs setup code when the Composable enters the Composition and runs cleanup code when the Composable leaves.
+It runs setup code implicitly when the Composable enters the Composition and runs cleanup code when the Composable leaves. No need to handle it explicitly.
 
 🟣 It is used to run synchronous code with side effects with an onDispose callback when the Composable leaves the Composition.
 It is not recommended to launch any coroutine in this block.
