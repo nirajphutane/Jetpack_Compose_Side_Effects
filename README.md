@@ -256,6 +256,128 @@ val index by produceState(initialValue = 0) {
   - It is not connected to repositories, databases, or app-wide state flows
 
 ---
+
+### 📌 derivedStateOf
+
+🟣 When a computation is derived based on a state in a Composable, it will be executed and the result will be consumed immediately when the Composable enters the composition.
+Also, when the state changes, the calculation should be re-performed. This is an expected behavior and completely normal.
+
+🟣 But, a Composable can recompose unexpectedly, and due to recomposition, the calculation will be re-executed even if the state has not changed.
+Due to this unnecessary recalculation, a new instance of the result may be created even if its value is the same as previous, which causes the Composable to be re-rendered unnecessarily.
+
+🟣 Leads to Unnecessary Recompositions
+
+```
+@Composable
+fun MyScreen(userList: List<User>) {
+    val sortedList = userList.sortedBy { it.name } // Recomputed on every recomposition!
+
+    LazyColumn {
+        items(sortedList) { user ->
+            Text(user.name)
+        }
+    }
+}
+```
+What’s wrong?
+  - Every time MyScreen recomposes, userList.sortedBy { it.name } is recomputed.
+  - Even if userList hasn't changed, a new instance of sortedList is created.
+  - Compose detects the new object reference, assumes it’s different, and triggers unnecessary recompositions.
+
+```
+@Composable
+fun MyScreen() {
+    var count by remember { mutableStateOf(1) }
+
+    // Recomputed on every recomposition
+    val start = ((count - 1) / 10) * 10 + 1
+    val end = start + 9
+    val rangeLabel = "Range $start–$end"
+
+    Column {
+        Text("Count: $count")
+        Text(rangeLabel)
+
+        Button(onClick = { count++ }) {
+            Text("Increase")
+        }
+    }
+}
+```
+What’s the issue?
+  - Every time you tap Increase, count changes → recomposition is triggered.
+  - The range is recalculated every time: val rangeLabel = ...
+  - Even when count goes from 2 → 3 → 4 (still within 1–10), the range label stays the same.
+  - But Compose sees a new String object each time — still "Range 1–10", but newly allocated — so it unnecessarily re-renders the Text.
+
+🟣 For good performance, when state changes, only the Composables whose derived result has changed should re-render. Otherwise, it wastes resources and can hurt performance.
+
+🟣 derivedStateOf is a Compose State utility that returns a State<T> whose value is derived from one or more other State objects.
+
+🟣 When the Composable enters the Composition, the calculation runs and the result is consumed immediately. When the Composable leaves the Composition, it’s no longer active and becomes eligible for Garbage Collection (GC).
+
+🟣 It emits a new state only when the derived state changes and the new value is different from the previous one.
+
+🟣 When will not emit the new state:
+  - If the derived value has not changed, it does not emit a new state.
+  - Even if the input state changes, but the computed result is the same as the previous one, it won’t trigger a recomposition.
+  - This prevents unnecessary recalculation and avoids re-rendering with identical results — saving CPU cycles, memory, and avoiding flickers or UI lag.
+
+```
+@Composable
+fun MyScreen(userList: List<User>) {
+    val sortedList by remember(userList) {
+        derivedStateOf { userList.sortedBy { it.name } }
+    }
+
+    LazyColumn {
+        items(sortedList) { user ->
+            Text(user.name)
+        }
+    }
+}
+```
+Here:
+  - derivedStateOf ensures sorting happens only if userList actually changes.
+  - If the sorted list is structurally the same as before, Compose skips recomposing the children.
+
+```
+@Composable
+fun MyScreen() {
+    var count by remember { mutableStateOf(1) }
+
+    val rangeLabel by remember {
+        derivedStateOf {
+            val start = ((count - 1) / 10) * 10 + 1
+            val end = start + 9
+            "Range $start–$end"
+        }
+    }
+
+    Column {
+        Text("Count: $count")
+        Text(rangeLabel)
+
+        Button(onClick = { count++ }) {
+            Text("Increase")
+        }
+    }
+}
+```
+Here:
+  - derivedStateOf caches the computed rangeLabel.
+  - It recomputes only if the final value changes.
+  - If count increases within the same range (e.g., 2 → 3 → 4), it returns the same string → Text skips recomposition.
+  - When count jumps from 10 → 11, the label changes to "Range 11–20" → recomposition occurs.
+  - Even though this example is simple, the pattern is general: you derive a value from other State objects, and Compose only re-renders when the derived value changes.
+
+🟣 Performance note:
+  - derivedStateOf is not free — it adds extra State observation and dependency tracking in Compose.
+  - Use it when:
+     - The computation is expensive (measure time and space complexity).
+     - You want to minimize re-rendering when only the derived value changes — especially when the amount of UI being recomposed is large, as this can improve performance.
+
+---
 ### Thanks 🙏🏻
 
 * #### Side Effects
