@@ -27,39 +27,6 @@ With LaunchedEffect, if the key does not change, the same LaunchedEffect instanc
 
 🟣 If the Composable leaves the Composition and re-enters, LaunchedEffect will start fresh even if the key is the same, constant, or absent. In this case, the key does not affect restart behavior.
 
-🟣 Flow Diagram:
-```
-                ┌─────────────────────────┐
-                │ Composable enters       │
-                │ the Composition         │
-                └───────────┬─────────────┘
-                            │
-                            ▼
-                ┌─────────────────────────┐
-                │ LaunchedEffect starts   │
-                │ coroutine in its scope  │
-                └───────────┬─────────────┘
-                            │
-          ┌─────────────────┼─────────────────┐
-          ▼                 ▼                 ▼
-   (Recomposition)   (Key changes)    (Composable leaves Composition)
-  ┌────────────────┐ ┌─────────────┐ ┌────────────────────────────────┐
-  │ Key same/none  │ │ New key     │ │ Dispose LaunchedEffect         │
-  │ → No restart   │ │ → Cancel &  │ │ → Cancel coroutine scope       │
-  │ Coroutine keeps│ │ restart     │ │ → Scope removed from memory    │
-  │ running        │ │ coroutine   │ └───────────┬────────────────────┘
-  └────────────────┘ └─────────────┘             │
-                                                  ▼
-                                     ┌────────────────────────┐
-                                     │ Composable re-enters   │
-                                     │ the Composition        │
-                                     └───────────┬────────────┘
-                                                 │
-                                                 ▼
-                                    (Fresh start like initial)
-
-```
-
 ---
 
 ### 📌 DisposableEffect
@@ -83,37 +50,6 @@ During recomposition, if the key does not change, the same DisposableEffect inst
   - With a different key value → immediately cancels the current run, and restarts from scratch with the new key. This restart is triggered by key change, not by recomposition alone.
 
 🟣 If the Composable leaves the Composition and re-enters, DisposableEffect will start fresh even if the key is the same, constant, or absent. In this case, the key does not affect restart behavior.
-
-```
-                ┌─────────────────────────┐
-                │ Composable enters       │
-                │ the Composition         │
-                └───────────┬─────────────┘
-                            │
-                            ▼
-                ┌─────────────────────────┐
-                │ Run setup code (sync)   │
-                └───────────┬─────────────┘
-                            │
-          ┌─────────────────┼─────────────────┐
-          ▼                 ▼                 ▼
-   (Recomposition)   (Key changes)    (Composable leaves Composition)
-  ┌────────────────┐ ┌─────────────┐ ┌────────────────────────────────┐
-  │ Key same/none  │ │ New key     │ │ Run cleanup code               │
-  │ → No restart   │ │ → Run       │ │ Release resources, unregister  │
-  │ Setup stays    │ │ cleanup,    │ │ listeners, close handles, etc. │
-  │ active         │ │ then setup  │ └───────────┬────────────────────┘
-  └────────────────┘ └─────────────┘             │
-                                                  ▼
-                                     ┌────────────────────────┐
-                                     │ Composable re-enters   │
-                                     │ the Composition        │
-                                     └───────────┬────────────┘
-                                                 │
-                                                 ▼
-                                    (Fresh setup like initial)
-
-```
 
 ---
 
