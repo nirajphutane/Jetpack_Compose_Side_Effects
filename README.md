@@ -83,7 +83,7 @@ During recomposition, if the key does not change, the same DisposableEffect inst
 
 🟣 But unlike LaunchedEffect, it will not start implicitly when the Composable enters the Composition. It is created but not started until launch is explicitly called. It will, however, automatically cancel when the Composable leaves the Composition.
 
-🟣 LaunchedEffect is a Composable function that runs immediately during composition, but normal callbacks from Compose UI components are non-Composable. Calling LaunchedEffect from such callbacks will cause a compile-time error.
+🟣 LaunchedEffect is a Composable function that runs during composition, but normal callbacks from Compose UI components are non-Composable. Calling LaunchedEffect from such callbacks will cause a compile-time error.
 
 🟣 On the other hand, rememberCoroutineScope() is declared inside a Composable during composition and returns a CoroutineScope instance that can be used later. This allows you to safely launch coroutines in non-Composable callbacks while still being lifecycle-aware. So, rememberCoroutineScope is typically used for handling events like gesture listeners.
 
@@ -195,7 +195,7 @@ val index by produceState(initialValue = 0) {
 
 ### 📌 derivedStateOf
 
-🟣 When a computation is derived based on a state in a Composable, it will be executed and the result will be consumed immediately when the Composable enters the composition.
+🟣 When a computation is derived based on a state in a Composable, it will be executed and the result will be consumed when the Composable enters the composition.
 Also, when the state changes, the calculation should be re-performed. This is an expected behavior and completely normal.
 
 🟣 But, a Composable can recompose unexpectedly, and due to recomposition, the calculation will be re-executed even if the state has not changed.
@@ -317,13 +317,13 @@ Here:
 
 ### 📌 SideEffect
 
-🟣 SideEffect is a lifecycle-aware, synchronous block that runs on the main/UI thread after a composition or recomposition has completed — unlike other side-effect blocks that execute immediately when the composable enters the composition.
+🟣 SideEffect is a lifecycle-aware, synchronous block that runs on the main/UI thread after a composition or recomposition has completed — unlike other side-effect blocks that execute when the composable enters the composition.
 
 🟣 Think of it as a post-composition notifier: it does nothing during the composition phase itself but is guaranteed to run after the UI tree is successfully committed.
 
 🟣 Registration & Execution Order:
   - When a composable enters the composition, Compose first runs the composition phase (building the UI tree, executing child composables from top to bottom).
-  - When the SideEffect line is reached, Compose does not execute it immediately — it registers it.
+  - When the SideEffect line is reached, Compose does not execute it immediately — it registers it only.
   - Once all children have finished composing successfully, Compose enters the apply changes phase and then executes all registered SideEffect blocks.
   - Execution order is bottom-to-top in the composition tree (deepest child’s effect first, then its parent, then grandparent, etc.) because effects are tied to the UI node lifecycle.
 
