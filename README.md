@@ -378,6 +378,48 @@ Here:
      - You want to minimize re-rendering when only the derived value changes — especially when the amount of UI being recomposed is large, as this can improve performance.
 
 ---
+
+### 📌 SideEffect
+
+🟣 SideEffect is a lifecycle-aware, synchronous block that runs on the main/UI thread after a composition or recomposition has completed — unlike other side-effect blocks that execute immediately when the composable enters the composition.
+
+🟣 Think of it as a post-composition notifier: it does nothing during the composition phase itself but is guaranteed to run after the UI tree is successfully committed.
+
+🟣 Registration & Execution Order:
+  - When a composable enters the composition, Compose first runs the composition phase (building the UI tree, executing child composables from top to bottom).
+  - When the SideEffect line is reached, Compose does not execute it immediately — it registers it.
+  - Once all children have finished composing successfully, Compose enters the apply changes phase and then executes all registered SideEffect blocks.
+  - Execution order is bottom-to-top in the composition tree (deepest child’s effect first, then its parent, then grandparent, etc.) because effects are tied to the UI node lifecycle.
+
+🟣 It does not prevent recomposition — it only runs after recomposition. If no recomposition occurs, SideEffect does not run.
+
+🟣 What SideEffect is NOT:
+  - A way to skip UI rendering.
+  - A performance optimization by itself.
+  - A place for heavy work or suspend functions.
+
+🟣 Think of SideEffect like a feedback loop after UI building:
+  - SideEffect = “Run this small, main-thread action after Compose has successfully committed the UI.”
+  - Build UI → queue effects → after everything is built → flush effects deepest-to-topmost.
+
+```
+@Composable
+fun Parent() {
+    SideEffect { println("Parent SideEffect") }
+    Child()
+}
+
+@Composable
+fun Child() {
+    SideEffect { println("Child SideEffect") }
+}
+
+Output:
+Child SideEffect
+Parent SideEffect
+```
+
+---
 ### Thanks 🙏🏻
 
 * #### Side Effects
